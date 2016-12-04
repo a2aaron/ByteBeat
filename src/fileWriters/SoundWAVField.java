@@ -14,20 +14,14 @@ public class SoundWAVField extends WAVField {
 	}
 	
 	public void appendBytes(byte[] bytes) {
-		if (getBytes() == null) {
-			throw new RuntimeException("Your");
-		}
-		setBytes(concatBytes(getBytes(), bytes));
+		EndianConverter.convertEndian(order, bytes);
+		this.bytes = concatBytes(getBytes(), bytes);
 	}
 
 	private byte[] concatBytes(byte[] a, byte[] b) {
 		byte[] c = new byte[a.length + b.length];
-		for (int i = 0; i < a.length; i++) {
-			c[i] = a[i];
-		}
-		for (int i = a.length; i < c.length; i++) {
-			c[i] = b[i - a.length];
-		}
+		System.arraycopy(a, 0, c, 0, a.length);
+		System.arraycopy(b, 0, c, a.length, b.length);
 		return c;
 	}
 	

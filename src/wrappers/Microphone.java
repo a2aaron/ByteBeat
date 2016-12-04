@@ -5,14 +5,15 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
-public class Microphone {
+public class Microphone implements SystemResource {
 	private TargetDataLine microphone;
 	private AudioFormat format;
-	
+	boolean enabled = true;
+
 	public Microphone(AudioFormat format) {
 		this.format = format;
 	}
-	
+
 	public void open() {
 		DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, format);
 		while (true) {
@@ -22,22 +23,34 @@ public class Microphone {
 				microphone.start();
 				System.out.println("Successfully opened a microphone. ");
 				break;
-			
+
 			} catch (LineUnavailableException e) {
 				System.out.println("Couldn't open a line... Trying again");
 			}
 		}
 	}
-	
+
 	public void readBytes(byte[] data) {
-		microphone.read(data, 0, data.length);
+		if (enabled) {
+			microphone.read(data, 0, data.length);
+		}
 	}
-	
+
 	public void close() {
 		microphone.close();
 	}
-	
+
 	public int getBufferSize() {
 		return microphone.getBufferSize();
+	}
+
+	@Override
+	public void enable() {
+		enabled = true;
+	}
+
+	@Override
+	public void disable() {
+		enabled = false;
 	}
 }

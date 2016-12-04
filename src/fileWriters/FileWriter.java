@@ -5,10 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class FileWriter {
+import wrappers.SystemResource;
+
+public class FileWriter implements SystemResource {
 	File file;
 	OutputStream out;
-	boolean disabled;
+	boolean enabled = true;
 
 	public FileWriter(String path) {
 		try {
@@ -39,12 +41,12 @@ public class FileWriter {
 		} else {
 			System.out.println("Could not make file at " + file.getAbsolutePath());
 			System.out.println("FileWriter will not write to file as it could not be created.");
-			disabled = true;
+			enabled = false;
 		}
 	}
 
 	public void write(byte[] data) {
-		if (!disabled) {
+		if (enabled) {
 			try {
 				out.write(data, 0, data.length);
 			} catch (IOException e) {
@@ -52,7 +54,8 @@ public class FileWriter {
 			}
 		}
 	}
-
+	
+	@Override
 	public void close() {
 		try {
 			out.close();
@@ -60,5 +63,23 @@ public class FileWriter {
 			System.out.println("Could not close stream");
 		}
 		System.out.println("Closed output stream");
+	}
+	
+	@Override
+	public void open() {
+		if (!file.exists()) {
+			createNewFile();
+		}
+	}
+
+	@Override
+	public void enable() {
+		enabled = true;
+		
+	}
+
+	@Override
+	public void disable() {
+		enabled = false;
 	}
 }

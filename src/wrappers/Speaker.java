@@ -5,10 +5,10 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-public class Speaker {
+public class Speaker implements SystemResource {
 	private SourceDataLine speaker;
 	private AudioFormat format;
-	
+	boolean enabled = true;;
 	public Speaker(AudioFormat format) {
 		this.format = format;
 	}
@@ -29,11 +29,22 @@ public class Speaker {
 	}
 	
 	public void writeBytes(byte[] data) {
-//		System.out.println("Wrote " + Arrays.toString(data) + " bytes");
-		speaker.write(data, 0, data.length);
+		if (enabled) {
+			speaker.write(data, 0, data.length);
+		}
 	}
 	
 	public void close() {
 		speaker.close();
+	}
+
+	@Override
+	public void enable() {
+		
+	}
+
+	@Override
+	public void disable() {
+		// TODO Auto-generated method stub
 	}
 }

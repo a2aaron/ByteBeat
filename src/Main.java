@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 import javax.sound.sampled.AudioFormat;
 
@@ -14,25 +15,34 @@ import wrappers.Speaker;
 public class Main {
 	public static void main(String[] args) {
 		float sampleRate = 8000.0F;
-		int sampleSizeInBits = 8;
 		int channels = 1;
-		boolean isSigned = false;
-		boolean bigEndian = false;
+		int sampleSizeInBits = 8;
+		boolean isSigned = true;
+		if (sampleSizeInBits == 8) {
+			isSigned = false;
+		}
+		boolean bigEndian = true;
 
 		AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits, channels, isSigned, bigEndian);
+
 		System.out.println(format.getEncoding().toString());
 		WAVWriter file = new WAVWriter("test.wav", format);
-		Speaker speaker = new Speaker(format);
+		Speaker speaker = new Speaker(format);		
 		Microphone mic = new Microphone(format);
+
+		mic.disable();
+
+		file.open();
 		speaker.open();
 		mic.open();
-		
+
 		byte[] data = new byte[mic.getBufferSize()/10];
 		int start = 0;
-		
+		int minute = 60;
+		int minutesPerSample = (int) (minute * sampleRate);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		
-		while (start < 10000000) {
+
+		while (start < minutesPerSample * 99) {
 			mic.readBytes(data);
 //			DataManipulation.repeat(data, data.length/4);
 //			DataManipulation.amplify(data, 8);

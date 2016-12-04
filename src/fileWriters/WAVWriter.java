@@ -61,8 +61,9 @@ public class WAVWriter extends FileWriter {
 	
 	@Override
 	public void close() {
-		this.ChunkSize.setInt(4 + (8 + Subchunk1Size.getInt()) + (8 + Subchunk2Size.getInt()));
 		this.Subchunk2Size.setInt(this.Sound.getBytes().length);
+		this.ChunkSize.setInt(4 + (8 + Subchunk1Size.getInt()) + (8 + Subchunk2Size.getInt()));
+		System.out.println(ChunkSize.getInt());
 		
 		// RIFF Header
 		super.write(this.ChunkID.getBytes());
@@ -83,7 +84,6 @@ public class WAVWriter extends FileWriter {
 		super.write(this.Sound.getBytes());
 		
 		System.out.println("Wrote " + this.Subchunk2Size.getInt() + " bytes of sound data");
-		
 		super.close();
 	}
 }
