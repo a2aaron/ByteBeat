@@ -25,7 +25,7 @@ public class WAVWriter extends FileWriter {
 	// data subchunk
 	IntWAVField Subchunk2ID = new IntWAVField(ByteOrder.BIG_ENDIAN); // "data"
 	IntWAVField Subchunk2Size = new IntWAVField(ByteOrder.LITTLE_ENDIAN); // number of bytes in Sound field
-	SoundWAVField Sound = new SoundWAVField(ByteOrder.LITTLE_ENDIAN); // Sound data, stored as 4 bytes per sample (if two channel, 2 bytes per channel) or 2 bytes per sample (if one channel)
+	WAVBody Sound = new WAVBody(ByteOrder.LITTLE_ENDIAN); // Sound data, stored as 4 bytes per sample (if two channel, 2 bytes per channel) or 2 bytes per sample (if one channel)
 
 	public WAVWriter(String path, AudioFormat format) {
 		super(path);
