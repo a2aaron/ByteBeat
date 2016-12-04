@@ -31,7 +31,8 @@ public class Main {
 		Microphone mic = new Microphone(format);
 
 		mic.disable();
-
+		speaker.disable();
+		
 		file.open();
 		speaker.open();
 		mic.open();
@@ -40,17 +41,18 @@ public class Main {
 		int start = 0;
 		int minute = 60;
 		int minutesPerSample = (int) (minute * sampleRate);
-		double volume = 0.01;
+		double volume = 1;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
 		while (start < minutesPerSample * 99) {
 			mic.readBytes(data);
 
-			DataManipulation.repeat(data, data.length/4);
-			Bytebeat bytebeat = t -> (t&t%255)-(t*3&t>>13&t>>6);
+			Bytebeat bytebeat = t ->  {
+				int w=t%(t>>8|t>>16); int b=w>>5|t>>8; return (b*t)-(t*(t>>8));
+			};
 			
 			DataManipulation.fillWithBytebeat(data, start, bytebeat);
-			DataManipulation.amplify8Bit(data, volume);
+//			DataManipulation.amplify8Bit(data, volume);
 			
 			start += data.length;
 			if (start % minutesPerSample == 0) {

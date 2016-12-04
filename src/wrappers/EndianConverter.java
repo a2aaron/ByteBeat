@@ -20,6 +20,16 @@ public class EndianConverter {
 		
 	}
 	
+	public static <T extends Number> byte[] convertEndian(ByteOrder order, T value) {
+		if (value instanceof Integer) {
+			return EndianConverter.convertEndian(order, (int) value);
+		} else if (value instanceof Short) {
+			return EndianConverter.convertEndian(order, (short) value);
+		} else {
+			throw new IllegalArgumentException("Expected values were Integer and Short. Was passed: " + value.getClass().getName()); 
+		}
+	}
+	
 	public static byte[] convertEndian(ByteOrder order, String bytes) {
 		return convertEndian(order, bytes.getBytes(StandardCharsets.US_ASCII));
 	}
@@ -29,6 +39,6 @@ public class EndianConverter {
 		buffer.order(order);
 		buffer.put(bytes);
 		bytes = buffer.array();
-		return bytes;		
+		return bytes;
 	}
 }

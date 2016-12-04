@@ -8,7 +8,7 @@ import javax.sound.sampled.SourceDataLine;
 public class Speaker implements SystemResource {
 	private SourceDataLine speaker;
 	private AudioFormat format;
-	boolean enabled = true;;
+	boolean enabled = true;
 	public Speaker(AudioFormat format) {
 		this.format = format;
 	}
@@ -40,11 +40,11 @@ public class Speaker implements SystemResource {
 
 	@Override
 	public void enable() {
-		
+		enabled = true;
 	}
 
 	@Override
 	public void disable() {
-		// TODO Auto-generated method stub
+		enabled = false;
 	}
 }

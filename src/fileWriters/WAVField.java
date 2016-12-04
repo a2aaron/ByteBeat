@@ -1,21 +1,16 @@
 package fileWriters;
 
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 
-public class WAVField {
-	int size;
+import wrappers.EndianConverter;
+import wrappers.PrimativeConverter;
+
+public class WAVField<T extends Number> {
 	ByteOrder order;
 	byte[] bytes;
-
-	public WAVField(int size, ByteOrder order) {
-		this.size = size;
-		this.order = order;
-		this.bytes = new byte[size];
-	}
-
+	T value;
+	
 	public WAVField(byte[] bytes, ByteOrder order) {
-		this.size = bytes.length;
 		this.order = order;
 		this.bytes = bytes;
 	}
@@ -23,20 +18,21 @@ public class WAVField {
 	public WAVField(ByteOrder order) {
 		this.order = order;
 	}
-
-	public void setBytes(byte[] bytes) {
-		if (bytes.length != this.size) {
-			throw new IllegalArgumentException(
-					"Passed arguement has: " + bytes.length + " bytes. Expected: " + this.size + " bytes.");
-		}
-		this.bytes = bytes;
-	}
 	
-	public void setBytes(String value) {
-		setBytes(value.getBytes(StandardCharsets.US_ASCII));
+	public void setBytes(byte[] bytes) {
+		this.bytes = bytes;
 	}
 
 	public byte[] getBytes() {
 		return this.bytes;
+	}
+	
+	public void set(T value) {
+		this.value = value;
+		this.bytes = EndianConverter.convertEndian(order, value);
+	}
+	
+	public T get() {
+		return this.value;
 	}
 }
