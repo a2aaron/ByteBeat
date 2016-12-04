@@ -14,15 +14,25 @@ public class DataManipulation {
 		}
 	}
 	
-	public static void amplify(byte[] data, int ampAmount) {
+	public static void amplify(byte[] data, double d) {
 		for (int i = 0; i < data.length; i++) {
-			data[i] *= ampAmount;
+			data[i] = (byte) (((int) data[i]) * d);
+		}
+	}
+	
+	public static void amplify8Bit(byte[] data, double d) {
+		for (int i = 0; i < data.length; i++) {
+			data[i] =  (byte) ((data[i] * d) + 127);
 		}
 	}
 	
 	public static void fillWithBytebeat(byte[] data, int start, Bytebeat bytebeat) {
 		for (int i = 0; i < data.length; i++) {
-			data[i] = (byte) bytebeat.get(start);
+			try {
+				data[i] = (byte) bytebeat.get(start);
+			} catch (Exception e) {
+				data[i] = (byte) 127;
+			}
 			start++;
 		}
 	}

@@ -40,15 +40,23 @@ public class Main {
 		int start = 0;
 		int minute = 60;
 		int minutesPerSample = (int) (minute * sampleRate);
+		double volume = 0.01;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
 		while (start < minutesPerSample * 99) {
 			mic.readBytes(data);
-//			DataManipulation.repeat(data, data.length/4);
-//			DataManipulation.amplify(data, 8);
-//			Bytebeat bytebeat = t -> (t>>4 & t>>8) * t;
-//			DataManipulation.fillWithBytebeat(data, start, bytebeat);
+
+			DataManipulation.repeat(data, data.length/4);
+			Bytebeat bytebeat = t -> (t&t%255)-(t*3&t>>13&t>>6);
+			
+			DataManipulation.fillWithBytebeat(data, start, bytebeat);
+			DataManipulation.amplify8Bit(data, volume);
+			
 			start += data.length;
+			if (start % minutesPerSample == 0) {
+				System.out.println(start / minutesPerSample + " Minutes Recorded");
+			}
+			
 			speaker.writeBytes(data);
 			file.write(data);
 			
@@ -57,6 +65,9 @@ public class Main {
 					String line = reader.readLine();
 					if (line.equals("quit")) {
 						break;
+					}
+					else {
+						volume = Double.parseDouble(line);
 					}
 				}
 			} catch (IOException e) {
