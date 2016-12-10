@@ -1,9 +1,12 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Mixer.Info;
 
 import fileWriters.FileWriter;
 import fileWriters.WAVWriter;
@@ -16,17 +19,21 @@ public class Main {
 	public static void main(String[] args) {
 		float sampleRate = 8000.0F;
 		int channels = 1;
-		int sampleSizeInBits = 8;
+		int sampleSizeInBits = 16;
 		boolean isSigned = true;
+		boolean bigEndian = false;
 		if (sampleSizeInBits == 8) {
 			isSigned = false;
 		}
-		boolean bigEndian = true;
+		
+		for (Info info : AudioSystem.getMixerInfo()) {
+			System.out.println(info.toString());
+		}
 
 		AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits, channels, isSigned, bigEndian);
 
 		System.out.println(format.getEncoding().toString());
-		WAVWriter file = new WAVWriter("test.wav", format);
+		WAVWriter file = new WAVWriter("test2.wav", format);
 		Speaker speaker = new Speaker(format);		
 		Microphone mic = new Microphone(format);
 
@@ -41,18 +48,19 @@ public class Main {
 		int start = 0;
 		int minute = 60;
 		int minutesPerSample = (int) (minute * sampleRate);
-		double volume = 1;
+		double volume = 0.1;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
 		while (start < minutesPerSample * 99) {
 			mic.readBytes(data);
 
 			Bytebeat bytebeat = t ->  {
-				int w=t%(t>>8|t>>16); int b=w>>5|t>>8; return (b*t)-(t*(t>>8));
+				return (int) (Math.sin(t*t/(440/sampleRate)) * 64);
 			};
 			
 			DataManipulation.fillWithBytebeat(data, start, bytebeat);
-//			DataManipulation.amplify8Bit(data, volume);
+//			DataManipulation.repeat(data, data.length/8);
+			DataManipulation.amplify(data, volume);
 			
 			start += data.length;
 			if (start % minutesPerSample == 0) {
@@ -60,8 +68,8 @@ public class Main {
 			}
 			
 			speaker.writeBytes(data);
-			file.write(data);
-			
+			file.write(data, bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
+//			volume = (Math.random()*5) * (128*Math.random());
 			try {
 				if (reader.ready()) {
 					String line = reader.readLine();

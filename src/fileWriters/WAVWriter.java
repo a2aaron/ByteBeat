@@ -56,9 +56,8 @@ public class WAVWriter extends FileWriter {
 		this.Subchunk2ID.setBytes(PrimativeConverter.StringToBytes("data"));
 	}
 
-	@Override
-	public void write(byte[] data) {
-		this.Sound.appendBytes(data);
+	public void write(byte[] data, ByteOrder order) {
+		this.Sound.appendBytes(data, order);
 	}
 	
 	@Override

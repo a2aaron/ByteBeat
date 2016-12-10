@@ -12,15 +12,17 @@ public class WAVBody {
 	ByteOrder order;
 	
 	public WAVBody(ByteOrder order) {
-		this.bytes = new byte[256];
+		this.bytes = new byte[512];
 		this.size = 0;
-		this.capacity = 256;
+		this.capacity = 512;
 		this.order = order;
 	}
 	
 	
-	public void appendBytes(byte[] bytes) {
-		EndianConverter.convertEndian(order, bytes);
+	public void appendBytes(byte[] bytes, ByteOrder order) {
+		if (this.order != order) {
+			EndianConverter.convertEndian(bytes); // Ensure correct endiness
+		}
 		if (bytesRemaining() < bytes.length) {
 			expandBytes(capacity * 2);
 		}
@@ -45,6 +47,10 @@ public class WAVBody {
 	}
 	
 	public byte[] getBytes() {
-		return bytes;
+		byte[] actualBytes = new byte[size];
+		for (int i = 0; i < size; i++) {
+			actualBytes[i] = bytes[i];
+		}
+		return actualBytes;
 	}
 }
